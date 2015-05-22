@@ -13,7 +13,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
 
-    var longTapRecognizer: UILongPressGestureRecognizer?
+    var longTapRecognizer: UILongPressGestureRecognizer!
+    var pinAnnotationLocation: MKAnnotation!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,36 +24,30 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     override func viewWillAppear(animated: Bool) {
-        self.addKeyboardDismissRecognizer()
+        self.view.addGestureRecognizer(longTapRecognizer!)
     }
     
     override func viewWillDisappear(animated: Bool) {
-        self.removeKeyboardDismissRecognizer()
+        self.view.removeGestureRecognizer(longTapRecognizer!)
     }
     
     // MARK: - Long Tap Recognizer
     
-    func addKeyboardDismissRecognizer() {
-        self.view.addGestureRecognizer(longTapRecognizer!)
-    }
+    func handleLongTap(sender: UILongPressGestureRecognizer) {
+        
+        if (sender.state == UIGestureRecognizerState.Began) {
+
+            //Get the location of the gesture
+            let tapLocation: CGPoint = sender.locationInView(self.mapView)
     
-    func removeKeyboardDismissRecognizer() {
-        self.view.removeGestureRecognizer(longTapRecognizer!)
-    }
+            //Convert the location of the gesture to coordinates
+            let tapLocationCoordinate: CLLocationCoordinate2D = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
     
-    func handleLongTap(recognizer: UILongPressGestureRecognizer) {
-        
-        //Get the location of the gesture
-        let tapLocation: CGPoint = recognizer.locationInView(self.mapView)
-        
-        //Convert the location of the gesture to coordinates
-        let tapLocationCoordinate: CLLocationCoordinate2D = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
-        
-        var pinAnnotation = MKPointAnnotation()
-        pinAnnotation.coordinate = tapLocationCoordinate
-        
-        self.mapView.addAnnotation(pinAnnotation)
-        
+            var pinAnnotation = MKPointAnnotation()
+            pinAnnotation.coordinate = tapLocationCoordinate
+            
+            self.mapView.addAnnotation(pinAnnotation)
+        }
     }
 
     // MARK: - Save the zoom level helpers
@@ -106,6 +101,27 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
         saveMapRegion()
     }
+    
+    // Here we set the pin to be draggable and have an animation of dropping into the map after been dropped.
+    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+    
+        let reuseId = "pin"
+    
+        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView!
+
+        pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+        pinView!.draggable = true
+        pinView!.animatesDrop = true
+    
+        return pinView
+    }
+    
+//    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+//        
+//        if(newState == .Ending){
+//            view.annotation.coordinate
+//        }
+//    }
 
 
 }
