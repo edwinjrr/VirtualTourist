@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		21FB90551B0F79180020251B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90541B0F79180020251B /* AppDelegate.swift */; };
 		21FB90581B0F79180020251B /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90561B0F79180020251B /* VirtualTourist.xcdatamodeld */; };
-		21FB905A1B0F79180020251B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90591B0F79180020251B /* ViewController.swift */; };
+		21FB905A1B0F79180020251B /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90591B0F79180020251B /* MapViewController.swift */; };
 		21FB905D1B0F79180020251B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 21FB905B1B0F79180020251B /* Main.storyboard */; };
 		21FB905F1B0F79180020251B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 21FB905E1B0F79180020251B /* Images.xcassets */; };
 		21FB90621B0F79180020251B /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21FB90601B0F79180020251B /* LaunchScreen.xib */; };
 		21FB906E1B0F79180020251B /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB906D1B0F79180020251B /* VirtualTouristTests.swift */; };
+		21FB90781B0F7CAE0020251B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21FB90771B0F7CAE0020251B /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,13 +32,14 @@
 		21FB90531B0F79180020251B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21FB90541B0F79180020251B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		21FB90571B0F79180020251B /* VirtualTourist.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTourist.xcdatamodel; sourceTree = "<group>"; };
-		21FB90591B0F79180020251B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		21FB90591B0F79180020251B /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		21FB905C1B0F79180020251B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		21FB905E1B0F79180020251B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		21FB90611B0F79180020251B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		21FB90671B0F79180020251B /* VirtualTouristTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualTouristTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		21FB906C1B0F79180020251B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21FB906D1B0F79180020251B /* VirtualTouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristTests.swift; sourceTree = "<group>"; };
+		21FB90771B0F7CAE0020251B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21FB90781B0F7CAE0020251B /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +64,7 @@
 		21FB90461B0F79180020251B = {
 			isa = PBXGroup;
 			children = (
+				21FB90771B0F7CAE0020251B /* MapKit.framework */,
 				21FB90511B0F79180020251B /* VirtualTourist */,
 				21FB906A1B0F79180020251B /* VirtualTouristTests */,
 				21FB90501B0F79180020251B /* Products */,
@@ -80,7 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				21FB90541B0F79180020251B /* AppDelegate.swift */,
-				21FB90591B0F79180020251B /* ViewController.swift */,
+				21FB90591B0F79180020251B /* MapViewController.swift */,
 				21FB905B1B0F79180020251B /* Main.storyboard */,
 				21FB905E1B0F79180020251B /* Images.xcassets */,
 				21FB90601B0F79180020251B /* LaunchScreen.xib */,
@@ -164,6 +168,11 @@
 				TargetAttributes = {
 					21FB904E1B0F79180020251B = {
 						CreatedOnToolsVersion = 6.3.1;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					21FB90661B0F79180020251B = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -215,7 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21FB905A1B0F79180020251B /* ViewController.swift in Sources */,
+				21FB905A1B0F79180020251B /* MapViewController.swift in Sources */,
 				21FB90581B0F79180020251B /* VirtualTourist.xcdatamodeld in Sources */,
 				21FB90551B0F79180020251B /* AppDelegate.swift in Sources */,
 			);
