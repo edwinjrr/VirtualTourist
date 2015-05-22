@@ -13,13 +13,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
 
-    var tapRecognizer: UILongPressGestureRecognizer?
+    var longTapRecognizer: UILongPressGestureRecognizer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreMapRegion(false)
         
-        tapRecognizer = UILongPressGestureRecognizer(target: self, action: "handleLongTap:")
+        longTapRecognizer = UILongPressGestureRecognizer(target: self, action: "handleLongTap:")
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -33,15 +33,26 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: - Long Tap Recognizer
     
     func addKeyboardDismissRecognizer() {
-        self.view.addGestureRecognizer(tapRecognizer!)
+        self.view.addGestureRecognizer(longTapRecognizer!)
     }
     
     func removeKeyboardDismissRecognizer() {
-        self.view.removeGestureRecognizer(tapRecognizer!)
+        self.view.removeGestureRecognizer(longTapRecognizer!)
     }
     
     func handleLongTap(recognizer: UILongPressGestureRecognizer) {
-        performSegueWithIdentifier("ShowAlbum", sender: self)
+        
+        //Get the location of the gesture
+        let tapLocation: CGPoint = recognizer.locationInView(self.mapView)
+        
+        //Convert the location of the gesture to coordinates
+        let tapLocationCoordinate: CLLocationCoordinate2D = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
+        
+        var pinAnnotation = MKPointAnnotation()
+        pinAnnotation.coordinate = tapLocationCoordinate
+        
+        self.mapView.addAnnotation(pinAnnotation)
+        
     }
 
     // MARK: - Save the zoom level helpers
