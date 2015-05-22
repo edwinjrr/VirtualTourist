@@ -16,6 +16,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     var longTapRecognizer: UILongPressGestureRecognizer!
     var pinAnnotationLocation: MKAnnotation!
     
+    var annotations = [MKPointAnnotation]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreMapRegion(false)
@@ -45,6 +47,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
             var pinAnnotation = MKPointAnnotation()
             pinAnnotation.coordinate = tapLocationCoordinate
+            annotations.append(pinAnnotation)
             
             self.mapView.addAnnotation(pinAnnotation)
         }
@@ -97,7 +100,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     // This allows the view controller to be notified whenever the map region changes and save the new region.
-    
     func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
         saveMapRegion()
     }
@@ -112,17 +114,30 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
         pinView!.draggable = true
         pinView!.animatesDrop = true
+        pinView!.selected = true
+        //pinView!.setDragState(.Starting, animated: true)
     
         return pinView
     }
     
-//    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-//        
-//        if(newState == .Ending){
-//            view.annotation.coordinate
-//        }
+    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        
+        if(newState == .Ending){
+            var droppedAt: CLLocationCoordinate2D = view.annotation.coordinate
+            //println("Dropped at \(droppedAt.latitude) and \(droppedAt.longitude)")
+        }
+    }
+    
+//    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
+//        view.dragState = .Starting
+//    }
+    
+//    func mapView(mapView: MKMapView!, didAddAnnotationViews views: [AnyObject]!) {
+//        mapView.selectAnnotation(annotations, animated: false)
 //    }
 
-
+//    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+//        view.selected = true
+//    }
 }
 
