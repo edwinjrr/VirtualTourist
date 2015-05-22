@@ -13,9 +13,35 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var mapView: MKMapView!
 
+    var tapRecognizer: UILongPressGestureRecognizer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreMapRegion(false)
+        
+        tapRecognizer = UILongPressGestureRecognizer(target: self, action: "handleLongTap:")
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.addKeyboardDismissRecognizer()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.removeKeyboardDismissRecognizer()
+    }
+    
+    // MARK: - Long Tap Recognizer
+    
+    func addKeyboardDismissRecognizer() {
+        self.view.addGestureRecognizer(tapRecognizer!)
+    }
+    
+    func removeKeyboardDismissRecognizer() {
+        self.view.removeGestureRecognizer(tapRecognizer!)
+    }
+    
+    func handleLongTap(recognizer: UILongPressGestureRecognizer) {
+        performSegueWithIdentifier("ShowAlbum", sender: self)
     }
 
     // MARK: - Save the zoom level helpers

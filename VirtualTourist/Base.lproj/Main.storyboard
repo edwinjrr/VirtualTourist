@@ -36,11 +36,30 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="mapView" destination="8IA-OG-pjs" id="Nsc-pf-quW"/>
+                        <segue destination="bNq-T6-5Hy" kind="show" identifier="ShowAlbum" id="l25-af-hSe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1117" y="429"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="iFM-FM-yMz">
+            <objects>
+                <viewController id="bNq-T6-5Hy" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="toT-5d-HwI"/>
+                        <viewControllerLayoutGuide type="bottom" id="OPp-8v-38i"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="LS2-BT-mPw">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VS0-5a-3Kv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1837" y="429"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="FgS-vo-Ygs">
