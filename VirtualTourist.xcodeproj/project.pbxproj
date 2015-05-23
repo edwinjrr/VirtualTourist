@@ -15,6 +15,7 @@
 		21FB90621B0F79180020251B /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21FB90601B0F79180020251B /* LaunchScreen.xib */; };
 		21FB906E1B0F79180020251B /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB906D1B0F79180020251B /* VirtualTouristTests.swift */; };
 		21FB90781B0F7CAE0020251B /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21FB90771B0F7CAE0020251B /* MapKit.framework */; };
+		21FB907A1B1112E30020251B /* AlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90791B1112E30020251B /* AlbumViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,7 @@
 		21FB906C1B0F79180020251B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21FB906D1B0F79180020251B /* VirtualTouristTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristTests.swift; sourceTree = "<group>"; };
 		21FB90771B0F7CAE0020251B /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		21FB90791B1112E30020251B /* AlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 			children = (
 				21FB90541B0F79180020251B /* AppDelegate.swift */,
 				21FB90591B0F79180020251B /* MapViewController.swift */,
+				21FB90791B1112E30020251B /* AlbumViewController.swift */,
 				21FB905B1B0F79180020251B /* Main.storyboard */,
 				21FB905E1B0F79180020251B /* Images.xcassets */,
 				21FB90601B0F79180020251B /* LaunchScreen.xib */,
@@ -224,6 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21FB907A1B1112E30020251B /* AlbumViewController.swift in Sources */,
 				21FB905A1B0F79180020251B /* MapViewController.swift in Sources */,
 				21FB90581B0F79180020251B /* VirtualTourist.xcdatamodeld in Sources */,
 				21FB90551B0F79180020251B /* AppDelegate.swift in Sources */,
@@ -422,6 +426,7 @@
 				21FB90731B0F79180020251B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		21FB90741B0F79180020251B /* Build configuration list for PBXNativeTarget "VirtualTouristTests" */ = {
 			isa = XCConfigurationList;
@@ -430,6 +435,7 @@
 				21FB90761B0F79180020251B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
