@@ -14,7 +14,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
 
     var longTapRecognizer: UILongPressGestureRecognizer!
-    var pinAnnotationLocation: MKAnnotation!
     
     var annotations = [MKPointAnnotation]()
     
@@ -107,6 +106,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // Here we set the pin to be draggable and have an animation of dropping into the map after been dropped.
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
     
+        println("PinView setup")
+        
         let reuseId = "pin"
     
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView!
@@ -115,7 +116,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         pinView!.draggable = true
         pinView!.animatesDrop = true
         pinView!.selected = true
-        //pinView!.setDragState(.Starting, animated: true)
     
         return pinView
     }
@@ -125,6 +125,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         if(newState == .Ending){
             var droppedAt: CLLocationCoordinate2D = view.annotation.coordinate
             //println("Dropped at \(droppedAt.latitude) and \(droppedAt.longitude)")
+            println("Drag ended")
         }
     }
     
@@ -132,12 +133,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 //        view.dragState = .Starting
 //    }
     
-//    func mapView(mapView: MKMapView!, didAddAnnotationViews views: [AnyObject]!) {
-//        mapView.selectAnnotation(annotations, animated: false)
-//    }
-
-//    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-//        view.selected = true
-//    }
+    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+        println("Pin deselected")
+        view.selected = true
+        println("Pin selected")
+    }
 }
 
