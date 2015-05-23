@@ -46,6 +46,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
             var pinAnnotation = MKPointAnnotation()
             pinAnnotation.coordinate = tapLocationCoordinate
+            pinAnnotation.title = "Show album"
+            pinAnnotation.subtitle = "City, Country"
             annotations.append(pinAnnotation)
             
             self.mapView.addAnnotation(pinAnnotation)
@@ -105,8 +107,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // Here we set the pin to be draggable and have an animation of dropping into the map after been dropped.
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
-    
-        println("PinView setup")
         
         let reuseId = "pin"
     
@@ -116,27 +116,30 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         pinView!.draggable = true
         pinView!.animatesDrop = true
         pinView!.selected = true
-    
+        
+        pinView!.canShowCallout = true
+        pinView!.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
+        
         return pinView
     }
     
+    //Action for the annotation callout accesory.
+    func mapView(mapView: MKMapView!, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        performSegueWithIdentifier("ShowAlbum", sender: self)
+    }
+    
+    //Update de pin coordinates when the drag ends.
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         
         if(newState == .Ending){
             var droppedAt: CLLocationCoordinate2D = view.annotation.coordinate
             //println("Dropped at \(droppedAt.latitude) and \(droppedAt.longitude)")
-            println("Drag ended")
         }
     }
     
-//    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
-//        view.dragState = .Starting
-//    }
-    
+    //Keeps all the pins selected so they can be always draggable
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-        println("Pin deselected")
         view.selected = true
-        println("Pin selected")
     }
 }
 
