@@ -15,7 +15,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     var longTapRecognizer: UILongPressGestureRecognizer!
     
+    var pins = [Pin]()
+    
     var annotations = [MKPointAnnotation]()
+    
+    //var tapLocationCoordinates: CLLocationCoordinate2D!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,17 +44,57 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
             //Get the location of the gesture
             let tapLocation: CGPoint = sender.locationInView(self.mapView)
-    
+
             //Convert the location of the gesture to coordinates
-            let tapLocationCoordinate: CLLocationCoordinate2D = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
-    
-            var pinAnnotation = MKPointAnnotation()
-            pinAnnotation.coordinate = tapLocationCoordinate
-            pinAnnotation.title = "Show album"
-            pinAnnotation.subtitle = "City, Country"
-            annotations.append(pinAnnotation)
+            let tapLocationCoordinates = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
             
-            self.mapView.addAnnotation(pinAnnotation)
+            //Get an address from coordinates (Reverse geocoding)
+            var geocoder = CLGeocoder()
+            
+            //Get the CLLocation for the reverse geocoding
+            var longitude: CLLocationDegrees = tapLocationCoordinates.longitude
+            var latitude: CLLocationDegrees = tapLocationCoordinates.latitude
+            var location = CLLocation(latitude: latitude, longitude: longitude)
+   
+            geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
+                
+                if error != nil {
+                    println("Reverse geocoder failed with error" + error.localizedDescription)
+                    return
+                }
+                else {
+                    if placemarks.count > 0 {
+                        let placemark = placemarks[0] as! CLPlacemark
+                        
+                        //TODO: Leer sobre GCD y ver si podemos sacar este code from here.
+//                        var pinDictionary: [String : AnyObject] = [
+//                                                                    "longitude": longitude,
+//                                                                    "latitude": latitude,
+//                                                                    "locality": placemark.locality,
+//                                                                    "administrativeArea": placemark.administrativeArea,
+//                                                                    "country": placemark.country
+//                                                                    ]
+//
+//                        var pin = Pin(dictionary: pinDictionary)
+//                        self.pins.append(pin)
+             
+                        var pinAnnotation = MKPointAnnotation()
+                        pinAnnotation.coordinate = tapLocationCoordinates
+
+//                        pinAnnotation.title = pin.locality
+//                        pinAnnotation.subtitle = "\(pin.administrativeArea), \(pin.country)"
+                        
+                        pinAnnotation.title = placemark.locality
+                        pinAnnotation.subtitle = "\(placemark.administrativeArea), \(placemark.country)"
+                        
+                        self.annotations.append(pinAnnotation)
+                        self.mapView.addAnnotation(pinAnnotation)
+                    }
+                    else {
+                        println("Problem with the data received from geocoder")
+                    }
+                }
+            })
         }
     }
 
@@ -115,19 +159,33 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
         pinView!.draggable = true
         pinView!.animatesDrop = true
-        pinView!.selected = true
-        
-        pinView!.canShowCallout = true
         pinView!.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
+        pinView!.canShowCallout = true
+        pinView!.selected = true
         
         return pinView
     }
     
     //Action for the annotation callout accesory.
     func mapView(mapView: MKMapView!, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        performSegueWithIdentifier("ShowAlbum", sender: self)
+        //performSegueWithIdentifier("ShowAlbum", sender: self)
+        
+        let controller = storyboard!.instantiateViewControllerWithIdentifier("AlbumViewController") as! AlbumViewController
+        
+        controller.coordinates = annotationView.annotation.coordinate
+        
+        self.navigationController!.pushViewController(controller, animated: true)
     }
     
+//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+//        if(segue.identifier == "stopRecording") {
+//            let playSoundsVC:PlaySoundsViewController = segue.destinationViewController as! PlaySoundsViewController
+//            let data = sender as! RecordedAudio
+//            playSoundsVC.receivedAudio = data
+//        }
+//    }
+    
+    //TODO: Use Pin object to change properties of it (title and subtitle)
     //Update de pin coordinates when the drag ends.
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         
@@ -141,5 +199,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
         view.selected = true
     }
+    
 }
 

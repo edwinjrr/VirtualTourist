@@ -7,28 +7,26 @@
 //
 
 import UIKit
+import MapKit
 
-class AlbumViewController: UIViewController {
+class AlbumViewController: UIViewController, MKMapViewDelegate {
 
+    @IBOutlet weak var mapView: MKMapView!
+    
+    var coordinates: CLLocationCoordinate2D!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let regionRadius: CLLocationDistance = 20000
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinates, regionRadius, regionRadius)
+        self.mapView.setRegion(coordinateRegion, animated: true)
+        var pinAnnotation = MKPointAnnotation()
+        pinAnnotation.coordinate = coordinates
+        self.mapView.addAnnotation(pinAnnotation)
 
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

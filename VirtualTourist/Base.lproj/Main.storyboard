@@ -48,7 +48,7 @@
         <!--Album-->
         <scene sceneID="iFM-FM-yMz">
             <objects>
-                <viewController id="bNq-T6-5Hy" customClass="AlbumViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AlbumViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="bNq-T6-5Hy" customClass="AlbumViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="toT-5d-HwI"/>
                         <viewControllerLayoutGuide type="bottom" id="OPp-8v-38i"/>
@@ -91,6 +91,9 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="77" id="YQA-nm-mB2"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="bNq-T6-5Hy" id="tVN-c7-yGh"/>
+                                </connections>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -110,6 +113,9 @@
                     <navigationItem key="navigationItem" title="Album" id="OHH-Fq-uDL">
                         <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="trash" id="coR-GS-Qm5"/>
                     </navigationItem>
+                    <connections>
+                        <outlet property="mapView" destination="ILm-hx-qqi" id="hgG-Nj-5hl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VS0-5a-3Kv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
