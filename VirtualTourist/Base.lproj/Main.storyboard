@@ -58,7 +58,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="J9e-Wy-7H5">
-                                <rect key="frame" x="0.0" y="141" width="600" height="415"/>
+                                <rect key="frame" x="0.0" y="79" width="600" height="477"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="sOb-7o-AEB">
                                     <size key="itemSize" width="50" height="50"/>
@@ -67,16 +67,34 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoViewCell" id="oJO-bE-VDX">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoViewCell" id="oJO-bE-VDX" customClass="PhotoCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LFt-g8-MAG">
+                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                </imageView>
+                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="LFt-g8-MAG" firstAttribute="top" secondItem="oJO-bE-VDX" secondAttribute="topMargin" constant="-8" id="1LV-sT-R8u"/>
+                                            <constraint firstItem="LFt-g8-MAG" firstAttribute="leading" secondItem="oJO-bE-VDX" secondAttribute="leadingMargin" constant="-8" id="A0o-LX-rK6"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="LFt-g8-MAG" secondAttribute="trailing" constant="-8" id="RNH-Jr-UKe"/>
+                                            <constraint firstAttribute="bottomMargin" secondItem="LFt-g8-MAG" secondAttribute="bottom" constant="-8" id="YWC-2C-WzM"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="photoImageView" destination="LFt-g8-MAG" id="M5C-Lx-uGi"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="bNq-T6-5Hy" id="ins-mX-mbC"/>
+                                    <outlet property="delegate" destination="bNq-T6-5Hy" id="YAo-fN-sx0"/>
+                                </connections>
                             </collectionView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xJx-JA-1gy">
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
@@ -104,9 +122,9 @@
                             <constraint firstAttribute="trailingMargin" secondItem="J9e-Wy-7H5" secondAttribute="trailing" constant="-16" id="J0Q-rZ-lhq"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ILm-hx-qqi" secondAttribute="trailing" constant="-16" id="KPh-r7-aIk"/>
                             <constraint firstItem="ILm-hx-qqi" firstAttribute="leading" secondItem="LS2-BT-mPw" secondAttribute="leadingMargin" constant="-16" id="Q1z-rW-A5e"/>
+                            <constraint firstItem="J9e-Wy-7H5" firstAttribute="top" secondItem="ILm-hx-qqi" secondAttribute="bottom" constant="-62" id="jqE-vK-FUb"/>
                             <constraint firstItem="ILm-hx-qqi" firstAttribute="top" secondItem="toT-5d-HwI" secondAttribute="bottom" id="q5d-4T-ydA"/>
                             <constraint firstItem="OPp-8v-38i" firstAttribute="top" secondItem="xJx-JA-1gy" secondAttribute="bottom" id="v2b-pM-I9H"/>
-                            <constraint firstItem="J9e-Wy-7H5" firstAttribute="top" secondItem="ILm-hx-qqi" secondAttribute="bottom" id="v3K-61-CxD"/>
                             <constraint firstItem="xJx-JA-1gy" firstAttribute="top" secondItem="J9e-Wy-7H5" secondAttribute="bottom" id="zXY-ib-4ov"/>
                         </constraints>
                     </view>
@@ -114,6 +132,7 @@
                         <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="trash" id="coR-GS-Qm5"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="collectionView" destination="J9e-Wy-7H5" id="Q7z-90-flJ"/>
                         <outlet property="mapView" destination="ILm-hx-qqi" id="hgG-Nj-5hl"/>
                     </connections>
                 </viewController>

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		215AE5701B14B113008B1254 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215AE56F1B14B113008B1254 /* Photo.swift */; };
+		215AE5721B14FA6D008B1254 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 215AE5711B14FA6D008B1254 /* PhotoCell.swift */; };
 		21FB90551B0F79180020251B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90541B0F79180020251B /* AppDelegate.swift */; };
 		21FB90581B0F79180020251B /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90561B0F79180020251B /* VirtualTourist.xcdatamodeld */; };
 		21FB905A1B0F79180020251B /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB90591B0F79180020251B /* MapViewController.swift */; };
@@ -33,6 +34,7 @@
 
 /* Begin PBXFileReference section */
 		215AE56F1B14B113008B1254 /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		215AE5711B14FA6D008B1254 /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		21FB904F1B0F79180020251B /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21FB90531B0F79180020251B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		21FB90541B0F79180020251B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 		21FB90801B13E6F30020251B /* View */ = {
 			isa = PBXGroup;
 			children = (
+				215AE5711B14FA6D008B1254 /* PhotoCell.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 				21FB907C1B1381A50020251B /* Pin.swift in Sources */,
 				21FB907A1B1112E30020251B /* AlbumViewController.swift in Sources */,
 				21FB905A1B0F79180020251B /* MapViewController.swift in Sources */,
+				215AE5721B14FA6D008B1254 /* PhotoCell.swift in Sources */,
 				21FB90581B0F79180020251B /* VirtualTourist.xcdatamodeld in Sources */,
 				21FB90551B0F79180020251B /* AppDelegate.swift in Sources */,
 				21FB907E1B13E6E10020251B /* Flickr.swift in Sources */,
