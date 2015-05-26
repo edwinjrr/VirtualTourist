@@ -15,6 +15,8 @@ class AlbumViewController: UIViewController, MKMapViewDelegate {
     
     var coordinates: CLLocationCoordinate2D!
     
+    var photos: [Photo]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,9 +26,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate {
         var pinAnnotation = MKPointAnnotation()
         pinAnnotation.coordinate = coordinates
         self.mapView.addAnnotation(pinAnnotation)
-
+        
+        println(photos)
     }
-
-    
-
 }
