@@ -8,20 +8,6 @@
 
 import Foundation
 
-//farm = 6;
-//"height_m" = 333;
-//id = 17336101419;
-//isfamily = 0;
-//isfriend = 0;
-//ispublic = 1;
-//owner = "63054128@N02";
-//secret = 5788a4629b;
-//server = 5322;
-//title = "Pallets of bananas travel along the conveyor to the automatic turntable";
-//"url_m" = "https://farm6.staticflickr.com/5322/17336101419_5788a4629b.jpg";
-//"width_m" = 500;
-//},
-
 class Photo {
     
     var imageURL: String!
@@ -33,7 +19,7 @@ class Photo {
     static func photosFromResults(results: [[String : AnyObject]]) -> [Photo] {
         
         var photos = [Photo]()
-        var reducedResults = results[0...5]
+        var reducedResults = results[0...20]
         
         /* Iterate through array of dictionaries; each Student is a dictionary */
         for result in reducedResults {

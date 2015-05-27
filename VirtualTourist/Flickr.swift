@@ -90,22 +90,10 @@ class Flickr {
                     if totalPhotosVal > 0 {
                         if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
                             
-                            //let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
-                            //let photoDictionary = photosArray[randomPhotoIndex] as [String: AnyObject]
-                            
                             var photos = Photo.photosFromResults(photosArray)
                             
                             completionHandler(result: photos, error: nil)
-                            
-//                            let imageUrlString = photoDictionary["url_m"] as? String
-//                            let imageURL = NSURL(string: imageUrlString!)
-//                            
-//                            if let imageData = NSData(contentsOfURL: imageURL!) {
-//                                completionHandler(result: imageData, error: nil)
-//                                
-//                            } else {
-//                                completionHandler(result: nil, error: "Image does not exist at \(imageURL)")
-//                            }
+
                         } else {
                             completionHandler(result: nil, error: "Cant find key 'photo' in \(photosDictionary)")
                         }
@@ -117,7 +105,6 @@ class Flickr {
                 }
             }
         }
-        
         task.resume()
     }
     

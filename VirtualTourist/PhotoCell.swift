@@ -12,6 +12,7 @@ class PhotoCell: UICollectionViewCell {
     
     //Elements of the custom collection view cell:
     
-    @IBOutlet weak var photoImageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     
 }

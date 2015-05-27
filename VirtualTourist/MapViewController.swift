@@ -15,15 +15,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     var longTapRecognizer: UILongPressGestureRecognizer!
     
-    var pins = [Pin]()
-    
     var annotations = [MKPointAnnotation]()
     
     var session: NSURLSession!
     
     var photos: [Photo] = [Photo]()
-    
-    //var tapLocationCoordinates: CLLocationCoordinate2D!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,69 +55,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             var longitude: CLLocationDegrees = tapLocationCoordinates.longitude
             var latitude: CLLocationDegrees = tapLocationCoordinates.latitude
             var location = CLLocation(latitude: latitude, longitude: longitude)
-   
-            geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
-                
-                if error != nil {
-                    println("Reverse geocoder failed with error" + error.localizedDescription)
-                    return
-                }
-                else {
-                    if placemarks.count > 0 {
-                        let placemark = placemarks[0] as! CLPlacemark
-                        
-                        //TODO: Leer sobre GCD y ver si podemos sacar este code from here.
-//                        var pinDictionary: [String : AnyObject] = [
-//                                                                    "longitude": longitude,
-//                                                                    "latitude": latitude,
-//                                                                    "locality": placemark.locality,
-//                                                                    "administrativeArea": placemark.administrativeArea,
-//                                                                    "country": placemark.country
-//                                                                    ]
-//
-//                        var pin = Pin(dictionary: pinDictionary)
-//                        self.pins.append(pin)
-             
-                        var pinAnnotation = MKPointAnnotation()
-                        pinAnnotation.coordinate = tapLocationCoordinates
-
-//                        pinAnnotation.title = pin.locality
-//                        pinAnnotation.subtitle = "\(pin.administrativeArea), \(pin.country)"
-                        
-                        pinAnnotation.title = placemark.locality
-                        pinAnnotation.subtitle = "\(placemark.administrativeArea), \(placemark.country)"
-                        
-                        self.annotations.append(pinAnnotation)
-                        self.mapView.addAnnotation(pinAnnotation)
-                        self.downloadImages(latitude, longitude: longitude)
-                    }
-                    else {
-                        println("Problem with the data received from geocoder")
-                    }
-                }
-            })
-        }
-    }
-    
-    func downloadImages(latitude: Double, longitude: Double) {
-
-        let methodArguments = [
-            "method": "flickr.photos.search",
-            "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
-            "bbox": createBoundingBoxString(latitude, longitude: longitude),
-            "safe_search": "1",
-            "extras": "url_m",
-            "format": "json",
-            "nojsoncallback": "1"
-        ]
-        
-        Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
-            if let results = results {
-                self.photos = results
-            }
-            else {
-                println(error)
-            }
+            
+            var pinAnnotation = MKPointAnnotation()
+            pinAnnotation.coordinate = tapLocationCoordinates
+            
+            self.annotations.append(pinAnnotation)
+            self.mapView.addAnnotation(pinAnnotation)
         }
     }
 
@@ -184,58 +123,51 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView!
 
         pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-        pinView!.draggable = false
         pinView!.animatesDrop = true
-        pinView!.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
-        pinView!.canShowCallout = true
-        pinView!.selected = true
+        //pinView!.draggable = true
+        //pinView!.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
+        //pinView!.canShowCallout = true
+        //pinView!.selected = true
         
         return pinView
     }
     
-    //Action for the annotation callout accesory.
-    func mapView(mapView: MKMapView!, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
         
         let controller = storyboard!.instantiateViewControllerWithIdentifier("AlbumViewController") as! AlbumViewController
-        
-        controller.coordinates = annotationView.annotation.coordinate
+
+        controller.coordinates = view.annotation.coordinate
         controller.photos = self.photos
-        
+
         self.navigationController!.pushViewController(controller, animated: true)
     }
     
+    //Action for the annotation callout accesory.
     //TODO: Use Pin object to change properties of it (title and subtitle)
     //Update de pin coordinates when the drag ends.
-    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        
-        if(newState == .Ending){
-            var droppedAt: CLLocationCoordinate2D = view.annotation.coordinate
-            //println("Dropped at \(droppedAt.latitude) and \(droppedAt.longitude)")
-        }
-    }
-    
     //Keeps all the pins selected so they can be always draggable
-    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-        view.selected = true
-    }
+    //func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+    //    view.selected = true
+    //}
     
-    func createBoundingBoxString(latitude: Double, longitude: Double) -> String {
-        
-        let BOUNDING_BOX_HALF_WIDTH = 1.0
-        let BOUNDING_BOX_HALF_HEIGHT = 1.0
-        let LAT_MIN = -90.0
-        let LAT_MAX = 90.0
-        let LON_MIN = -180.0
-        let LON_MAX = 180.0
-        
-        /* Fix added to ensure box is bounded by minimum and maximums */
-        let bottom_left_lon = max(longitude - BOUNDING_BOX_HALF_WIDTH, LON_MIN)
-        let bottom_left_lat = max(latitude - BOUNDING_BOX_HALF_HEIGHT, LAT_MIN)
-        let top_right_lon = min(longitude + BOUNDING_BOX_HALF_HEIGHT, LON_MAX)
-        let top_right_lat = min(latitude + BOUNDING_BOX_HALF_HEIGHT, LAT_MAX)
-        
-        return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
-    }
-    
+    //            geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
+    //
+    //                if error != nil {
+    //                    println("Reverse geocoder failed with error" + error.localizedDescription)
+    //                    return
+    //                }
+    //                else {
+    //                    if placemarks.count > 0 {
+    //                        let placemark = placemarks[0] as! CLPlacemark
+    //
+    //                        var locality = placemark.locality
+    //                        var administrativeArea = placemark.administrativeArea
+    //                        var country = placemark.country
+    //                    }
+    //                    else {
+    //                        println("Problem with the data received from geocoder")
+    //                    }
+    //                }
+    //            })
 }
 

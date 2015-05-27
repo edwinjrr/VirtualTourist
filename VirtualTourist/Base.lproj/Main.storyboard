@@ -77,17 +77,24 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LFt-g8-MAG">
                                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                                 </imageView>
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="xOn-uC-T08">
+                                                    <rect key="frame" x="15" y="15" width="20" height="20"/>
+                                                    <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <constraints>
                                             <constraint firstItem="LFt-g8-MAG" firstAttribute="top" secondItem="oJO-bE-VDX" secondAttribute="topMargin" constant="-8" id="1LV-sT-R8u"/>
+                                            <constraint firstAttribute="centerX" secondItem="xOn-uC-T08" secondAttribute="centerX" id="7NK-AU-pvu"/>
                                             <constraint firstItem="LFt-g8-MAG" firstAttribute="leading" secondItem="oJO-bE-VDX" secondAttribute="leadingMargin" constant="-8" id="A0o-LX-rK6"/>
                                             <constraint firstAttribute="trailingMargin" secondItem="LFt-g8-MAG" secondAttribute="trailing" constant="-8" id="RNH-Jr-UKe"/>
                                             <constraint firstAttribute="bottomMargin" secondItem="LFt-g8-MAG" secondAttribute="bottom" constant="-8" id="YWC-2C-WzM"/>
+                                            <constraint firstAttribute="centerY" secondItem="xOn-uC-T08" secondAttribute="centerY" id="g4z-Eo-Eub"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="photoImageView" destination="LFt-g8-MAG" id="M5C-Lx-uGi"/>
+                                            <outlet property="imageView" destination="LFt-g8-MAG" id="dh1-s2-47h"/>
+                                            <outlet property="loadingIndicator" destination="xOn-uC-T08" id="klx-Kv-bmU"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
