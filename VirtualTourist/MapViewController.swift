@@ -46,21 +46,25 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let tapLocation: CGPoint = sender.locationInView(self.mapView)
 
             //Convert the location of the gesture to coordinates
-            let tapLocationCoordinates = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
+            let coordinates = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
             
             //Get an address from coordinates (Reverse geocoding)
-            var geocoder = CLGeocoder()
+            //var geocoder = CLGeocoder()
             
             //Get the CLLocation for the reverse geocoding
-            var longitude: CLLocationDegrees = tapLocationCoordinates.longitude
-            var latitude: CLLocationDegrees = tapLocationCoordinates.latitude
-            var location = CLLocation(latitude: latitude, longitude: longitude)
+            //var longitude: CLLocationDegrees = tapLocationCoordinates.longitude
+            //var latitude: CLLocationDegrees = tapLocationCoordinates.latitude
+            //var location = CLLocation(latitude: latitude, longitude: longitude)
             
-            var pinAnnotation = MKPointAnnotation()
-            pinAnnotation.coordinate = tapLocationCoordinates
+            //var pinAnnotation = MKPointAnnotation()
+            //pinAnnotation.coordinate = coordinates
             
-            self.annotations.append(pinAnnotation)
+            var pinAnnotation = Location()
+            pinAnnotation.coordinate = coordinates
+            
+            //self.annotations.append(pinAnnotation)
             self.mapView.addAnnotation(pinAnnotation)
+    
         }
     }
 
@@ -137,7 +141,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let controller = storyboard!.instantiateViewControllerWithIdentifier("AlbumViewController") as! AlbumViewController
 
         controller.coordinates = view.annotation.coordinate
-        controller.photos = self.photos
 
         self.navigationController!.pushViewController(controller, animated: true)
     }

@@ -15,9 +15,12 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     
     var coordinates: CLLocationCoordinate2D!
     
-    var photos: [Photo]!
+    var photos: [Photo] = [Photo]()
+    
+    var selectedIndexes = [NSIndexPath]()
     
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var deleteButton: UIBarButtonItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +29,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         setupMapView()
         
         //Download the images to populate the collectio view.
-        downloadImages(coordinates.latitude, longitude: coordinates.longitude)
+        //downloadImages(coordinates.latitude, longitude: coordinates.longitude)
     }
     
     // Layout the collection view
@@ -44,6 +47,10 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         let width = floor((self.collectionView.frame.size.width/3) - 2)
         layout.itemSize = CGSize(width: width, height: width)
         collectionView.collectionViewLayout = layout
+    }
+    
+    @IBAction func downloadNewCollection(sender: AnyObject) {
+        downloadImages(coordinates.latitude, longitude: coordinates.longitude)
     }
     
     func setupMapView() {
@@ -73,7 +80,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
             if error == nil {
                 
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.photos = results
+                    self.photos = results!
                     self.collectionView.reloadData()
                 })
             }
@@ -135,4 +142,45 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         
         return cell
     }
+    
+    func configureCell(cell: PhotoCell, atIndexPath indexPath: NSIndexPath) {
+        
+        // If the cell is "selected" it's color panel is grayed out
+        // we use the Swift `find` function to see if the indexPath is in the array
+        
+        if let index = find(selectedIndexes, indexPath) {
+            cell.imageView.alpha = 0.25
+        } else {
+            cell.imageView.alpha = 1.0
+        }
+    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
+        
+        // Whenever a cell is tapped we will toggle its presence in the selectedIndexes array
+        if let index = find(selectedIndexes, indexPath) {
+            selectedIndexes.removeAtIndex(index)
+        } else {
+            selectedIndexes.append(indexPath)
+        }
+        
+        // Then reconfigure the cell
+        configureCell(cell, atIndexPath: indexPath)
+        
+        // And update the buttom button
+        updateDeleteButton()
+    }
+    
+    func updateDeleteButton() {
+        if selectedIndexes.count > 0 {
+            deleteButton.enabled = true
+        }
+        else {
+            deleteButton.enabled = false
+        }
+    }
 }
+
+

@@ -107,7 +107,11 @@
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Uus-FF-90f"/>
-                                    <barButtonItem enabled="NO" title="New Collection" id="RYe-YH-sqN"/>
+                                    <barButtonItem title="New Collection" id="RYe-YH-sqN">
+                                        <connections>
+                                            <action selector="downloadNewCollection:" destination="bNq-T6-5Hy" id="S4i-cg-iMb"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="ddd-IS-ej3"/>
                                 </items>
                             </toolbar>
@@ -140,6 +144,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="collectionView" destination="J9e-Wy-7H5" id="Q7z-90-flJ"/>
+                        <outlet property="deleteButton" destination="coR-GS-Qm5" id="Pl3-bU-k3s"/>
                         <outlet property="mapView" destination="ILm-hx-qqi" id="hgG-Nj-5hl"/>
                     </connections>
                 </viewController>
