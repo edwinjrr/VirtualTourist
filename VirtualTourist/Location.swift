@@ -6,10 +6,9 @@
 //  Copyright (c) 2015 Edwin Rodriguez. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import MapKit
 import CoreData
-import CoreLocation
 
 @objc(Location)
 

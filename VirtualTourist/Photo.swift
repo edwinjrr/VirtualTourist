@@ -6,13 +6,26 @@
 //  Copyright (c) 2015 Edwin Rodriguez. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import MapKit
+import CoreData
 
-class Photo {
+@objc(Photo)
+
+class Photo: NSManagedObject {
     
-    var imageURL: String!
+    @NSManaged var imageURL: String
+    
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
 
-    init(dictionary: [String : AnyObject]) {
+    init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
+        
+        let entity =  NSEntityDescription.entityForName("Movie", inManagedObjectContext: context)!
+        
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        
         imageURL = dictionary["url_m"] as! String
     }
     
@@ -21,9 +34,9 @@ class Photo {
         var photos = [Photo]()
         var reducedResults = results[0...20]
         
-        /* Iterate through array of dictionaries; each Student is a dictionary */
+        /* Iterate through array of dictionaries; each Photo is a dictionary */
         for result in reducedResults {
-            photos.append(Photo(dictionary: result))
+            photos.append(Photo(dictionary: result, context: NSManagedObjectContext()))
         }
         
         return photos
