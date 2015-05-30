@@ -8,10 +8,28 @@
 
 import Foundation
 import MapKit
+import CoreData
+import CoreLocation
 
-class Location: MKPointAnnotation {
+@objc(Location)
+
+class Location: NSManagedObject, MKAnnotation {
     
-    var latitude: Double = 0.0
-    var longitude: Double = 0.0
+    @NSManaged var latitude: Double
+    @NSManaged var longitude: Double
     
+    var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2DMake(latitude, longitude)
+    }
+    
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
+    
+    init(context: NSManagedObjectContext) {
+        
+        let entity =  NSEntityDescription.entityForName("Location", inManagedObjectContext: context)!
+        
+        super.init(entity: entity,insertIntoManagedObjectContext: context)
+    }
 }

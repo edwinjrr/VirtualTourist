@@ -56,11 +56,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             //var latitude: CLLocationDegrees = tapLocationCoordinates.latitude
             //var location = CLLocation(latitude: latitude, longitude: longitude)
             
-            //var pinAnnotation = MKPointAnnotation()
-            //pinAnnotation.coordinate = coordinates
-            
-            var pinAnnotation = Location()
+            var pinAnnotation = MKPointAnnotation()
             pinAnnotation.coordinate = coordinates
+            
+            //var pinAnnotation = Location()
+            //pinAnnotation.coordinate = coordinates
             
             //self.annotations.append(pinAnnotation)
             self.mapView.addAnnotation(pinAnnotation)
