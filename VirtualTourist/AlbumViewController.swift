@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 
@@ -15,9 +16,11 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     
     var coordinates: CLLocationCoordinate2D!
     
-    var photos: [Photo] = [Photo]()
+    //var photos: [Photo] = [Photo]()
     
     var selectedIndexes = [NSIndexPath]()
+    
+    var pin: Location!
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var deleteButton: UIBarButtonItem!
@@ -27,9 +30,12 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         
         //Insert the selected pin in the map view.
         setupMapView()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
         
-        //Download the images to populate the collectio view.
-        //downloadImages(coordinates.latitude, longitude: coordinates.longitude)
+        //Download the images to populate the collection view.
+        downloadImages(coordinates.latitude, longitude: coordinates.longitude)
     }
     
     // Layout the collection view
@@ -37,8 +43,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        // Lay out the collection view so that cells take up 1/3 of the width,
-        // with no space in between.
+        // Lay out the collection view so that cells take up 1/3 of the width, with a small space in between.
         let layout : UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.minimumLineSpacing = 2
@@ -49,10 +54,21 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         collectionView.collectionViewLayout = layout
     }
     
-    @IBAction func downloadNewCollection(sender: AnyObject) {
-        downloadImages(coordinates.latitude, longitude: coordinates.longitude)
+    // MARK: - Core Data Convenience
+    
+    lazy var sharedContext: NSManagedObjectContext =  {
+        return CoreDataStackManager.sharedInstance().managedObjectContext!
+        }()
+    
+    func saveContext() {
+        CoreDataStackManager.sharedInstance().saveContext()
     }
     
+    @IBAction func downloadNewCollection(sender: AnyObject) {
+        //--->Empty by now!
+    }
+    
+    //Show the pin selected in the small map view on top of the view controller.
     func setupMapView() {
         let regionRadius: CLLocationDistance = 20000
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinates, regionRadius, regionRadius)
@@ -62,27 +78,47 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         self.mapView.addAnnotation(pinAnnotation)
     }
     
-    
     func downloadImages(latitude: Double, longitude: Double) {
         
-        let methodArguments = [
-            "method": "flickr.photos.search",
-            "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
-            "bbox": createBoundingBoxString(latitude, longitude: longitude),
-            "safe_search": "1",
-            "extras": "url_m",
-            "format": "json",
-            "nojsoncallback": "1"
-        ]
-        
-        Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
+        if pin.photos.isEmpty {
             
-            if error == nil {
+            let methodArguments = [
+                "method": "flickr.photos.search",
+                "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
+                "bbox": createBoundingBoxString(latitude, longitude: longitude),
+                "safe_search": "1",
+                "extras": "url_m",
+                "format": "json",
+                "nojsoncallback": "1"
+            ]
+            
+            Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
                 
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.photos = results!
-                    self.collectionView.reloadData()
-                })
+                if let error = error {
+                    println("Setup an alert view here") //<--- Setup an AlertView here!
+                }
+                else {
+                    
+                    if let photosDictionaries = results as [[String : AnyObject]]? {
+                        
+                        // Parse the array of photos dictionaries
+                        var photos = photosDictionaries.map() { (dictionary: [String : AnyObject]) -> Photo in
+                            
+                            let photo = Photo(dictionary: dictionary, context: self.sharedContext)
+                            
+                            photo.pin = self.pin
+                            
+                            return photo
+                        }
+                    
+                        dispatch_async(dispatch_get_main_queue(), {
+                            self.collectionView.reloadData()
+                        })
+                        
+                        // Save the context
+                        self.saveContext()
+                    }
+                }
             }
         }
     }
@@ -105,8 +141,10 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
     }
     
+    //MARK: - Collection View
+    
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photos.count
+        return pin.photos.count
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
@@ -122,7 +160,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         dispatch_async(queue, { () -> Void in
             var error:NSError?
             
-            let photo = self.photos[indexPath.item]
+            let photo = self.pin.photos[indexPath.item]
             
             let imageURL = NSURL(string: photo.imageURL)
 

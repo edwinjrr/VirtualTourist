@@ -15,6 +15,7 @@ import CoreData
 class Photo: NSManagedObject {
     
     @NSManaged var imageURL: String
+    @NSManaged var pin: Location?
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -22,23 +23,23 @@ class Photo: NSManagedObject {
 
     init(dictionary: [String : AnyObject], context: NSManagedObjectContext) {
         
-        let entity =  NSEntityDescription.entityForName("Movie", inManagedObjectContext: context)!
+        let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         imageURL = dictionary["url_m"] as! String
     }
     
-    static func photosFromResults(results: [[String : AnyObject]]) -> [Photo] {
-        
-        var photos = [Photo]()
-        var reducedResults = results[0...20]
-        
-        /* Iterate through array of dictionaries; each Photo is a dictionary */
-        for result in reducedResults {
-            photos.append(Photo(dictionary: result, context: NSManagedObjectContext()))
-        }
-        
-        return photos
-    }
+//    static func photosFromResults(results: [[String : AnyObject]]) -> [Photo] {
+//        
+//        var photos = [Photo]()
+//        var reducedResults = results[0...20]
+//        
+//        /* Iterate through array of dictionaries; each Photo is a dictionary */
+//        for result in reducedResults {
+//            photos.append(Photo(dictionary: result, context: NSManagedObjectContext()))
+//        }
+//        
+//        return photos
+//    }
 }

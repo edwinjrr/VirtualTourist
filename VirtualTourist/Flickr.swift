@@ -18,7 +18,7 @@ class Flickr {
     }
     
     /* Function makes first request to get a random page, then it makes a request to get an image with the random page */
-    func getImageFromFlickrBySearch(methodArguments: [String : AnyObject], completionHandler: (result: [Photo]?, error: String?) -> Void) {
+    func getImageFromFlickrBySearch(methodArguments: [String : AnyObject], completionHandler: (results: [[String : AnyObject]]?, error: String?) -> Void) {
         
         let session = NSURLSession.sharedSession()
         let urlString = "https://api.flickr.com/services/rest/" + escapedParameters(methodArguments)
@@ -27,7 +27,7 @@ class Flickr {
         
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
             if let error = downloadError {
-                completionHandler(result: nil, error: "Could not find photos")
+                completionHandler(results: nil, error: "Could not find photos")
             } else {
                 
                  /* Parsing the data */
@@ -40,21 +40,21 @@ class Flickr {
                     if let totalPages = photosDictionary["pages"] as? Int {
                         
                         /* Flickr API - will only return up the 4000 images (100 per page * 40 page max) */
-                        let pageLimit = min(totalPages, 40)
+                        let pageLimit = min(totalPages, 40) //Return de lesser from x and y.
                         let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
                         self.getImageFromFlickrBySearchWithPage(methodArguments, pageNumber: randomPage) { (results, error) in
-                            if let results = results {
-                                completionHandler(result: results, error: nil)
+                            if error == nil {
+                                completionHandler(results: results, error: nil)
                             }
                             else {
-                                completionHandler(result: nil, error: "1,2,3...error...")
+                                completionHandler(results: nil, error: "Cant find images from Flickr by Search with page.")
                             }
                         }
                     } else {
-                        completionHandler(result: nil, error: "Cant find key 'pages'")
+                        completionHandler(results: nil, error: "Cant find key 'pages'.")
                     }
                 } else {
-                    completionHandler(result: nil, error: "Cant find key 'photos'")
+                    completionHandler(results: nil, error: "Cant find key 'photos'.")
                 }
             }
         }
@@ -62,7 +62,7 @@ class Flickr {
         task.resume()
     }
     
-    func getImageFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], pageNumber: Int, completionHandler: (result: [Photo]?, error: String?) -> Void) {
+    func getImageFromFlickrBySearchWithPage(methodArguments: [String : AnyObject], pageNumber: Int, completionHandler: (result: [[String : AnyObject]]?, error: String?) -> Void) {
         
         /* Add the page to the method's arguments */
         var withPageDictionary = methodArguments
@@ -74,25 +74,34 @@ class Flickr {
         let request = NSURLRequest(URL: url)
         
         let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+            
             if let error = downloadError {
+                
                 completionHandler(result: nil, error: "Could not complete the request")
+                
             } else {
                 var parsingError: NSError? = nil
                 let parsedResult = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsingError) as! NSDictionary
                 
                 if let photosDictionary = parsedResult.valueForKey("photos") as? [String:AnyObject] {
                     
-                    var totalPhotosVal = 0
+                    var totalPhotosValue = 0
+                    
                     if let totalPhotos = photosDictionary["total"] as? String {
-                        totalPhotosVal = (totalPhotos as NSString).integerValue
+                        totalPhotosValue = (totalPhotos as NSString).integerValue
                     }
                     
-                    if totalPhotosVal > 0 {
+                    if totalPhotosValue > 0 {
+                        
                         if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
                             
-                            var photos = Photo.photosFromResults(photosArray)
+                            var reducedResult = [[String: AnyObject]]()
                             
-                            completionHandler(result: photos, error: nil)
+                            for result in photosArray[0...20] {
+                                reducedResult.append(result)
+                            }
+                            
+                            completionHandler(result: reducedResult, error: nil)
 
                         } else {
                             completionHandler(result: nil, error: "Cant find key 'photo' in \(photosDictionary)")

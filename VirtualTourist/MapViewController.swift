@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class MapViewController: UIViewController, MKMapViewDelegate {
     
@@ -15,15 +16,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
     var longTapRecognizer: UILongPressGestureRecognizer!
     
-    var annotations = [MKPointAnnotation]()
-    
-    var session: NSURLSession!
-    
-    var photos: [Photo] = [Photo]()
+    var pins = [Location]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         restoreMapRegion(false)
+        
+        pins = fetchAllPins()
+        
+        mapView.addAnnotations(pins)
         
         longTapRecognizer = UILongPressGestureRecognizer(target: self, action: "handleLongTap:")
     }
@@ -34,6 +35,27 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewWillDisappear(animated: Bool) {
         self.view.removeGestureRecognizer(longTapRecognizer!)
+    }
+    
+    // MARK: - Core Data Convenience
+    
+    lazy var sharedContext: NSManagedObjectContext =  {
+        return CoreDataStackManager.sharedInstance().managedObjectContext!
+        }()
+    
+    func saveContext() {
+        CoreDataStackManager.sharedInstance().saveContext()
+    }
+    
+    // MARK: - Actions
+    func fetchAllPins() -> [Location] {
+        let error: NSErrorPointer = nil
+        let fetchRequest = NSFetchRequest(entityName: "Location")
+        let results = sharedContext.executeFetchRequest(fetchRequest, error: error)
+        if error != nil {
+            println("Error in fetchAllActors(): \(error)")
+        }
+        return results as! [Location]
     }
     
     // MARK: - Long Tap Recognizer
@@ -52,19 +74,31 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             //var geocoder = CLGeocoder()
             
             //Get the CLLocation for the reverse geocoding
-            //var longitude: CLLocationDegrees = tapLocationCoordinates.longitude
-            //var latitude: CLLocationDegrees = tapLocationCoordinates.latitude
+            var longitude: CLLocationDegrees = coordinates.longitude
+            var latitude: CLLocationDegrees = coordinates.latitude
             //var location = CLLocation(latitude: latitude, longitude: longitude)
             
-            var pinAnnotation = MKPointAnnotation()
-            pinAnnotation.coordinate = coordinates
+            //var pinAnnotation = MKPointAnnotation()
+            //pinAnnotation.coordinate = coordinates
             
             //var pinAnnotation = Location()
             //pinAnnotation.coordinate = coordinates
             
             //self.annotations.append(pinAnnotation)
-            self.mapView.addAnnotation(pinAnnotation)
-    
+            //self.mapView.addAnnotation(pinAnnotation)
+            
+            var dictionary = [String : AnyObject]()
+            
+            dictionary["latitude"] = latitude
+            dictionary["longitude"] = longitude
+            
+            let pinToBeAdded = Location(dictionary: dictionary, context: sharedContext)
+            
+            self.mapView.addAnnotation(pinToBeAdded)
+            
+            self.pins.append(pinToBeAdded)
+            
+            CoreDataStackManager.sharedInstance().saveContext()
         }
     }
 
@@ -141,6 +175,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let controller = storyboard!.instantiateViewControllerWithIdentifier("AlbumViewController") as! AlbumViewController
 
         controller.coordinates = view.annotation.coordinate
+        controller.pin = view.annotation as! Location
 
         self.navigationController!.pushViewController(controller, animated: true)
     }
