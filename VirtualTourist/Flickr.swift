@@ -147,4 +147,10 @@ class Flickr {
         
         return Singleton.sharedInstance
     }
+    
+    // MARK: - Shared Image Cache
+    
+    struct Caches {
+        static let imageCache = ImageCache()
+    }
 }

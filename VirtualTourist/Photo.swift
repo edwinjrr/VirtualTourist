@@ -42,4 +42,15 @@ class Photo: NSManagedObject {
 //        
 //        return photos
 //    }
+    
+    var photoImage: UIImage? {
+        
+        get {
+            return Flickr.Caches.imageCache.imageWithIdentifier(imageURL)
+        }
+        
+        set {
+            Flickr.Caches.imageCache.storeImage(newValue, withIdentifier: imageURL)
+        }
+    }
 }

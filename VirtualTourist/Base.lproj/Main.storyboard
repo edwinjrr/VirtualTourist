@@ -58,7 +58,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="J9e-Wy-7H5">
-                                <rect key="frame" x="0.0" y="79" width="600" height="477"/>
+                                <rect key="frame" x="0.0" y="102" width="600" height="454"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="sOb-7o-AEB">
                                     <size key="itemSize" width="50" height="50"/>
@@ -116,9 +116,9 @@
                                 </items>
                             </toolbar>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ILm-hx-qqi">
-                                <rect key="frame" x="0.0" y="64" width="600" height="77"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="100"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="77" id="YQA-nm-mB2"/>
+                                    <constraint firstAttribute="height" constant="100" id="YQA-nm-mB2"/>
                                 </constraints>
                                 <connections>
                                     <outlet property="delegate" destination="bNq-T6-5Hy" id="tVN-c7-yGh"/>

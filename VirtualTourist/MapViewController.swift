@@ -48,6 +48,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     // MARK: - Actions
+    
     func fetchAllPins() -> [Location] {
         let error: NSErrorPointer = nil
         let fetchRequest = NSFetchRequest(entityName: "Location")
@@ -98,7 +99,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             self.pins.append(pinToBeAdded)
             
-            CoreDataStackManager.sharedInstance().saveContext()
+            self.saveContext()
         }
     }
 
@@ -178,15 +179,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         controller.pin = view.annotation as! Location
 
         self.navigationController!.pushViewController(controller, animated: true)
+        
+        mapView.deselectAnnotation(view.annotation, animated: false)
     }
     
     //Action for the annotation callout accesory.
     //TODO: Use Pin object to change properties of it (title and subtitle)
     //Update de pin coordinates when the drag ends.
+    
     //Keeps all the pins selected so they can be always draggable
-    //func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-    //    view.selected = true
-    //}
+//    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+//        view.selected = true
+//    }
     
     //            geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
     //
