@@ -15,6 +15,8 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     @IBOutlet weak var mapView: MKMapView!
     
     var coordinates: CLLocationCoordinate2D!
+
+    var pin: Location!
     
     // The selected indexes array keeps all of the indexPaths for cells that are "selected". The array is
     // used inside cellForItemAtIndexPath to lower the alpha of selected cells.  You can see how the array
@@ -26,10 +28,10 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
     
-    var pin: Location!
-    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var deleteButton: UIBarButtonItem!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var newCollection: UIBarButtonItem!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,21 +39,25 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         //Insert the selected pin in the map view.
         setupMapView()
         
-        // Step 2: Perform the fetch
-        fetchedResultsController.performFetch(nil)
+        // Start the fetched results controller
+        var error: NSError?
+        fetchedResultsController.performFetch(&error)
         
-        // Step 6: Set the delegate to this view controller
-        fetchedResultsController.delegate = self
+        if let error = error {
+            println("Error performing initial fetch: \(error)")
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
-    
-        //Download the images to populate the collection view.
         
+        activityIndicator.startAnimating()
+        
+        //Download the images to populate the collection view.
         if pin.photos.isEmpty {
             downloadPhotos()
+        } else {
+            activityIndicator.stopAnimating()
         }
-        
     }
     
     // Layout the collection view
@@ -70,6 +76,54 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         collectionView.collectionViewLayout = layout
     }
     
+    // Download the photos from Flickr
+    
+    func downloadPhotos() {
+        
+        println("-->Downloading Photos")
+        
+        let methodArguments = [
+            "method": "flickr.photos.search",
+            "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
+            "bbox": createBoundingBoxString(coordinates.latitude, longitude: coordinates.longitude),
+            "safe_search": "1",
+            "extras": "url_m",
+            "format": "json",
+            "nojsoncallback": "1"
+        ]
+        
+        Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
+            
+            if let error = error {
+                println("Setup an alert view here") //<--- Setup an AlertView here!
+            }
+            else {
+                
+                if let photosDictionaries = results as [[String : AnyObject]]? {
+                    
+                    // Parse the array of photos dictionaries
+                    var photos = photosDictionaries.map() { (dictionary: [String : AnyObject]) -> Photo in
+                        
+                        let photo = Photo(dictionary: dictionary, context: self.sharedContext)
+                        
+                        photo.pin = self.pin
+                        
+                        return photo
+                    }
+                    
+                    // Update the collection on the main thread
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.activityIndicator.stopAnimating()
+                        self.collectionView.reloadData()
+                    }
+                    
+                    // Save the context
+                    self.saveContext()
+                }
+            }
+        }
+    }
+    
     // MARK: - Core Data Convenience
     
     lazy var sharedContext: NSManagedObjectContext =  {
@@ -80,30 +134,73 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
             CoreDataStackManager.sharedInstance().saveContext()
         }
     
-    // MARK: - Configure Cell
+    // MARK: - NSFetchedResultsController
     
-    func configureCell(cell: PhotoCell, atIndexPath indexPath: NSIndexPath, photo: Photo) {
+    lazy var fetchedResultsController: NSFetchedResultsController = {
         
-        cell.backgroundColor = UIColor.grayColor()
-        cell.imageView.image = nil
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        fetchRequest.sortDescriptors = []
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+        }()
+    
+    // MARK: - UICollectionView
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        //return pin.photos.count
+        
+        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
+        
+        self.numberOfPhotosDownloaded = sectionInfo.numberOfObjects
+        
+        return sectionInfo.numberOfObjects
+    }
+    
+    var numberOfPhotosVisible: Int = 0
+    var numberOfPhotosDownloaded: Int = 0
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
+        //let photo = pin.photos[indexPath.item]
+        //let cellIdentifier = "PhotoViewCell"
+        //var photoImage = UIImage(named: "placeholder")
+        
+        let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+        
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoViewCell", forIndexPath: indexPath) as! PhotoCell
+        
         cell.loadingIndicator.startAnimating()
+        cell.backgroundColor = UIColor.grayColor()
         
         let queue:dispatch_queue_t = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         
-        //dispatch_async(queue, { () -> Void in
+        dispatch_async(queue, { () -> Void in
         
-        if photo.photoImage != nil {
-            
-            println("Using the image saved")
-            cell.loadingIndicator.stopAnimating()
-            cell.imageView.image = photo.photoImage
-            
-        } else {
+            if photo.photoImage != nil {
+                
+                //println("Using the image saved")
+                
+                //photoImage = photo.photoImage
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    cell.imageView.image = photo.photoImage
+                    cell.loadingIndicator.stopAnimating()
+                    
+                    self.numberOfPhotosVisible += 1
+                    
+                    if self.numberOfPhotosDownloaded == self.numberOfPhotosVisible {
+                        self.newCollection.enabled = true
+                        self.numberOfPhotosDownloaded = 0
+                    }
+                })
+                
+            } else {
 
-                cell.loadingIndicator.startAnimating()
-                cell.backgroundColor = UIColor.grayColor()
-
-                println("Calling the image url")
+                //println("Calling the image url")
                 
                 let imageURL = NSURL(string: photo.imageURL)
                 
@@ -119,12 +216,24 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
                     cell.imageView.image = image
                     cell.loadingIndicator.stopAnimating()
                     
-                    //return
+                    self.numberOfPhotosVisible += 1
+                    
+                    if self.numberOfPhotosDownloaded == self.numberOfPhotosVisible {
+                        self.newCollection.enabled = true
+                        self.numberOfPhotosDownloaded = 0
+                    }
                 })
             }
-        //})
+        })
         
-        cell.imageView!.image = photo.photoImage
+        //cell.imageView.image = photo.photoImage
+        
+        self.configureCell(cell, atIndexPath: indexPath)
+        
+        return cell
+    }
+    
+    func configureCell(cell: PhotoCell, atIndexPath indexPath: NSIndexPath) {
         
         // If the cell is "selected" it's color panel is grayed out
         // we use the Swift `find` function to see if the indexPath is in the array
@@ -136,108 +245,94 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         }
     }
     
-    // MARK: - UICollectionView
-    
-//    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-//        return self.fetchedResultsController.sections?.count ?? 0
-//    }
-    
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
-        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
+//        let photo = pin.photos[indexPath.item]
+//        
+//        photo.pin = nil
+//        
+//        collectionView.deleteItemsAtIndexPaths([indexPath])
+//        
+//        sharedContext.deleteObject(photo)
+//        self.saveContext()
         
-        println("number Of Cells: \(sectionInfo.numberOfObjects)")
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
         
-        return sectionInfo.numberOfObjects
+        // Whenever a cell is tapped we will toggle its presence in the selectedIndexes array
+        if let index = find(selectedIndexes, indexPath) {
+            selectedIndexes.removeAtIndex(index)
+        } else {
+            selectedIndexes.append(indexPath)
+        }
         
-        //return pin.photos.count
+        // Then reconfigure the cell
+        configureCell(cell, atIndexPath: indexPath)
+        
+        // And update the buttom button
+        updateDeleteButton()
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoViewCell", forIndexPath: indexPath) as! PhotoCell
-        
-        // Here is how to replace the actors array using objectAtIndexPath
-        let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
-        
-        self.configureCell(cell, atIndexPath: indexPath, photo: photo)
-        
-        return cell
+    // MARK: - Actions and Helpers
+    
+    //Show the pin selected in the small map view on top of the view controller.
+    func setupMapView() {
+        let regionRadius: CLLocationDistance = 20000
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinates, regionRadius, regionRadius)
+        self.mapView.setRegion(coordinateRegion, animated: true)
+        var pinAnnotation = MKPointAnnotation()
+        pinAnnotation.coordinate = coordinates
+        self.mapView.addAnnotation(pinAnnotation)
     }
     
-//    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-//        
-//        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoViewCell", forIndexPath: indexPath) as! PhotoCell
-//        
-//        //cell.backgroundColor = UIColor.blackColor()
-//        cell.loadingIndicator.startAnimating()
-//        cell.imageView.image = nil
-//        
-//        let queue:dispatch_queue_t = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-//        
-//        dispatch_async(queue, { () -> Void in
-//            
-//            let imageURL = NSURL(string: photo.imageURL)
-//    
-//            //let imageData = NSData(contentsOfURL: imageURL!)
-//    
-//            //cell.imageView.image = UIImage(data: imageData!)
-//    
-//            var error:NSError?
-//    
-//            if error == nil{
-//    
-//                if let imageData = NSData(contentsOfURL: imageURL!) {
-//    
-//                    let image = UIImage(data: imageData)
-//    
-//                    dispatch_async(dispatch_get_main_queue(), {
-//                        cell.imageView.image = image
-//                        cell.loadingIndicator.stopAnimating()
-//                        
-//                        return
-//                    })
-//                }
-//            }
-//            
-//            //self.configureCell(cell, atIndexPath: indexPath)
-//        })
-//        
-//        return cell
-//    }
-    
-    
-//    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-//        
-//        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
-//        
-//        // Whenever a cell is tapped we will toggle its presence in the selectedIndexes array
-//        if let index = find(selectedIndexes, indexPath) {
-//            selectedIndexes.removeAtIndex(index)
-//        } else {
-//            selectedIndexes.append(indexPath)
-//        }
-//        
-//        // Then reconfigure the cell
-//        configureCell(cell, atIndexPath: indexPath)
-//        
-//        // And update the buttom button
-//        updateDeleteButton()
-//    }
-    
-    // MARK: - NSFetchedResultsController
-    
-    lazy var fetchedResultsController: NSFetchedResultsController = {
+    func createBoundingBoxString(latitude: Double, longitude: Double) -> String {
         
-        let fetchRequest = NSFetchRequest(entityName: "Photo")
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageURL", ascending: true)]
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin);
+        let BOUNDING_BOX_HALF_WIDTH = 1.0
+        let BOUNDING_BOX_HALF_HEIGHT = 1.0
+        let LAT_MIN = -90.0
+        let LAT_MAX = 90.0
+        let LON_MIN = -180.0
+        let LON_MAX = 180.0
         
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
-        //fetchedResultsController.delegate = self
+        /* Fix added to ensure box is bounded by minimum and maximums */
+        let bottom_left_lon = max(longitude - BOUNDING_BOX_HALF_WIDTH, LON_MIN)
+        let bottom_left_lat = max(latitude - BOUNDING_BOX_HALF_HEIGHT, LAT_MIN)
+        let top_right_lon = min(longitude + BOUNDING_BOX_HALF_HEIGHT, LON_MAX)
+        let top_right_lat = min(latitude + BOUNDING_BOX_HALF_HEIGHT, LAT_MAX)
         
-        return fetchedResultsController
-        }()
+        return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
+    }
+    
+    @IBAction func deleteSelectedPhotos() {
+        var photosToDelete = [Photo]()
+        
+        for indexPath in selectedIndexes {
+            photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
+        }
+        
+        for photo in photosToDelete {
+            sharedContext.deleteObject(photo)
+        }
+        
+        selectedIndexes = [NSIndexPath]()
+    }
+    
+    @IBAction func deleteAllPhotos(sender: AnyObject) {
+        
+        for photo in fetchedResultsController.fetchedObjects as! [Photo] {
+            sharedContext.deleteObject(photo)
+        }
+        
+        downloadPhotos()
+        
+    }
+    
+    func updateDeleteButton() {
+        if selectedIndexes.count > 0 {
+            deleteButton.enabled = true
+        } else {
+            deleteButton.enabled = false
+        }
+    }
     
     // MARK: - Fetched Results Controller Delegate
     
@@ -253,7 +348,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     }
     
     // The second method may be called multiple times, once for each Color object that is added, deleted, or changed.
-    // We store the index paths into the three arrays.
+    // We store the incex paths into the three arrays.
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         
         switch type{
@@ -312,109 +407,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
                 self.collectionView.reloadItemsAtIndexPaths([indexPath])
             }
             
-        }, completion: nil)
-    }
-
-    // MARK: - Actions and Helpers
-    
-    @IBAction func downloadNewCollection(sender: AnyObject) {
-        //--->Empty by now!
-    }
-    
-    //Show the pin selected in the small map view on top of the view controller.
-    func setupMapView() {
-        let regionRadius: CLLocationDistance = 20000
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(coordinates, regionRadius, regionRadius)
-        self.mapView.setRegion(coordinateRegion, animated: true)
-        var pinAnnotation = MKPointAnnotation()
-        pinAnnotation.coordinate = coordinates
-        self.mapView.addAnnotation(pinAnnotation)
-    }
-    
-    func downloadPhotos() {
-        
-        println("--->Downloading Photos<----")
-        
-        let methodArguments = [
-            "method": "flickr.photos.search",
-            "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
-            "bbox": createBoundingBoxString(coordinates.latitude, longitude: coordinates.longitude),
-            "safe_search": "1",
-            "extras": "url_m",
-            "format": "json",
-            "nojsoncallback": "1"
-        ]
-        
-        Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
-            
-            if let error = error {
-                println("Setup an alert view here") //<--- Setup an AlertView here!
-            }
-            else {
-                
-                if let photosDictionaries = results as [[String : AnyObject]]? {
-
-                    // Parse the array of photos dictionaries
-                    var photos = photosDictionaries.map() { (dictionary: [String : AnyObject]) -> Photo in
-                        
-                        let photo = Photo(dictionary: dictionary, context: self.sharedContext)
-                        
-                        photo.pin = self.pin
-                        
-                        return photo
-                    }
-                
-                    // Update the collection on the main thread
-                    dispatch_async(dispatch_get_main_queue()) {
-                        self.collectionView.reloadData()
-                    }
-                    
-                    // Save the context
-                    self.saveContext()
-                }
-            }
-        }
-    }
-    
-    func createBoundingBoxString(latitude: Double, longitude: Double) -> String {
-        
-        let BOUNDING_BOX_HALF_WIDTH = 1.0
-        let BOUNDING_BOX_HALF_HEIGHT = 1.0
-        let LAT_MIN = -90.0
-        let LAT_MAX = 90.0
-        let LON_MIN = -180.0
-        let LON_MAX = 180.0
-        
-        /* Fix added to ensure box is bounded by minimum and maximums */
-        let bottom_left_lon = max(longitude - BOUNDING_BOX_HALF_WIDTH, LON_MIN)
-        let bottom_left_lat = max(latitude - BOUNDING_BOX_HALF_HEIGHT, LAT_MIN)
-        let top_right_lon = min(longitude + BOUNDING_BOX_HALF_HEIGHT, LON_MAX)
-        let top_right_lat = min(latitude + BOUNDING_BOX_HALF_HEIGHT, LAT_MAX)
-        
-        return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
-    }
-    
-    func updateDeleteButton() {
-        if selectedIndexes.count > 0 {
-            deleteButton.enabled = true
-        }
-        else {
-            deleteButton.enabled = false
-        }
-    }
-    
-    @IBAction func deleteSelectedPhotos() {
-        
-        if !selectedIndexes.isEmpty {
-            deleteAllPhotos()
-        }
-    }
-    
-    func deleteAllPhotos() {
-        
-        for photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            sharedContext.deleteObject(photo)
-        }
+            }, completion: nil)
     }
 }
 

@@ -30,19 +30,6 @@ class Photo: NSManagedObject {
         imageURL = dictionary["url_m"] as! String
     }
     
-//    static func photosFromResults(results: [[String : AnyObject]]) -> [Photo] {
-//        
-//        var photos = [Photo]()
-//        var reducedResults = results[0...20]
-//        
-//        /* Iterate through array of dictionaries; each Photo is a dictionary */
-//        for result in reducedResults {
-//            photos.append(Photo(dictionary: result, context: NSManagedObjectContext()))
-//        }
-//        
-//        return photos
-//    }
-    
     var photoImage: UIImage? {
         
         get {

@@ -66,6 +66,10 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <activityIndicatorView key="backgroundView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" id="n6G-0F-Cpi">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="454"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoViewCell" id="oJO-bE-VDX" customClass="PhotoCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -77,9 +81,8 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LFt-g8-MAG">
                                                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                                 </imageView>
-                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="xOn-uC-T08">
-                                                    <rect key="frame" x="15" y="15" width="20" height="20"/>
-                                                    <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="xOn-uC-T08">
+                                                    <rect key="frame" x="7" y="7" width="37" height="37"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -107,9 +110,9 @@
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Uus-FF-90f"/>
-                                    <barButtonItem title="New Collection" id="RYe-YH-sqN">
+                                    <barButtonItem enabled="NO" title="New Collection" id="RYe-YH-sqN">
                                         <connections>
-                                            <action selector="downloadNewCollection:" destination="bNq-T6-5Hy" id="S4i-cg-iMb"/>
+                                            <action selector="deleteAllPhotos:" destination="bNq-T6-5Hy" id="y64-NU-ppb"/>
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="ddd-IS-ej3"/>
@@ -140,12 +143,18 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Album" id="OHH-Fq-uDL">
-                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="trash" id="coR-GS-Qm5"/>
+                        <barButtonItem key="rightBarButtonItem" enabled="NO" systemItem="trash" id="coR-GS-Qm5">
+                            <connections>
+                                <action selector="deleteSelectedPhotos" destination="bNq-T6-5Hy" id="7uh-dn-o7e"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="activityIndicator" destination="n6G-0F-Cpi" id="jxe-EM-ahT"/>
                         <outlet property="collectionView" destination="J9e-Wy-7H5" id="Q7z-90-flJ"/>
                         <outlet property="deleteButton" destination="coR-GS-Qm5" id="Pl3-bU-k3s"/>
                         <outlet property="mapView" destination="ILm-hx-qqi" id="hgG-Nj-5hl"/>
+                        <outlet property="newCollection" destination="RYe-YH-sqN" id="xmA-cA-vJV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VS0-5a-3Kv" userLabel="First Responder" sceneMemberID="firstResponder"/>
