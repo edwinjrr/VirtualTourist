@@ -138,6 +138,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return pin.photos.count
+
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
