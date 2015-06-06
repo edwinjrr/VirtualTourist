@@ -71,22 +71,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             //Convert the location of the gesture to coordinates
             let coordinates = self.mapView.convertPoint(tapLocation, toCoordinateFromView: self.mapView)
             
-            //Get an address from coordinates (Reverse geocoding)
-            //var geocoder = CLGeocoder()
-            
-            //Get the CLLocation for the reverse geocoding
             var longitude: CLLocationDegrees = coordinates.longitude
             var latitude: CLLocationDegrees = coordinates.latitude
-            //var location = CLLocation(latitude: latitude, longitude: longitude)
-            
-            //var pinAnnotation = MKPointAnnotation()
-            //pinAnnotation.coordinate = coordinates
-            
-            //var pinAnnotation = Location()
-            //pinAnnotation.coordinate = coordinates
-            
-            //self.annotations.append(pinAnnotation)
-            //self.mapView.addAnnotation(pinAnnotation)
             
             var dictionary = [String : AnyObject]()
             

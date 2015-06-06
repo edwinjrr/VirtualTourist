@@ -66,7 +66,7 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
-                                <activityIndicatorView key="backgroundView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" id="n6G-0F-Cpi">
+                                <activityIndicatorView key="backgroundView" hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" id="gQS-V4-rfR">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="454"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 </activityIndicatorView>
@@ -118,7 +118,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="ddd-IS-ej3"/>
                                 </items>
                             </toolbar>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="ILm-hx-qqi">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ILm-hx-qqi">
                                 <rect key="frame" x="0.0" y="64" width="600" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="100" id="YQA-nm-mB2"/>
@@ -127,6 +127,12 @@
                                     <outlet property="delegate" destination="bNq-T6-5Hy" id="tVN-c7-yGh"/>
                                 </connections>
                             </mapView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorry, no photos found..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qvR-9o-vCQ">
+                                <rect key="frame" x="205" y="290" width="191" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -136,10 +142,12 @@
                             <constraint firstAttribute="trailingMargin" secondItem="J9e-Wy-7H5" secondAttribute="trailing" constant="-16" id="J0Q-rZ-lhq"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ILm-hx-qqi" secondAttribute="trailing" constant="-16" id="KPh-r7-aIk"/>
                             <constraint firstItem="ILm-hx-qqi" firstAttribute="leading" secondItem="LS2-BT-mPw" secondAttribute="leadingMargin" constant="-16" id="Q1z-rW-A5e"/>
+                            <constraint firstAttribute="centerX" secondItem="qvR-9o-vCQ" secondAttribute="centerX" id="YDV-Gv-oOk"/>
                             <constraint firstItem="J9e-Wy-7H5" firstAttribute="top" secondItem="ILm-hx-qqi" secondAttribute="bottom" constant="-62" id="jqE-vK-FUb"/>
                             <constraint firstItem="ILm-hx-qqi" firstAttribute="top" secondItem="toT-5d-HwI" secondAttribute="bottom" id="q5d-4T-ydA"/>
                             <constraint firstItem="OPp-8v-38i" firstAttribute="top" secondItem="xJx-JA-1gy" secondAttribute="bottom" id="v2b-pM-I9H"/>
                             <constraint firstItem="xJx-JA-1gy" firstAttribute="top" secondItem="J9e-Wy-7H5" secondAttribute="bottom" id="zXY-ib-4ov"/>
+                            <constraint firstAttribute="centerY" secondItem="qvR-9o-vCQ" secondAttribute="centerY" id="zuB-H1-92K"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Album" id="OHH-Fq-uDL">
@@ -150,11 +158,12 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="activityIndicator" destination="n6G-0F-Cpi" id="jxe-EM-ahT"/>
+                        <outlet property="activityIndicator" destination="gQS-V4-rfR" id="baw-Zb-2Ka"/>
                         <outlet property="collectionView" destination="J9e-Wy-7H5" id="Q7z-90-flJ"/>
                         <outlet property="deleteButton" destination="coR-GS-Qm5" id="Pl3-bU-k3s"/>
                         <outlet property="mapView" destination="ILm-hx-qqi" id="hgG-Nj-5hl"/>
                         <outlet property="newCollection" destination="RYe-YH-sqN" id="xmA-cA-vJV"/>
+                        <outlet property="noImagesFound" destination="qvR-9o-vCQ" id="yZg-C3-3ke"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VS0-5a-3Kv" userLabel="First Responder" sceneMemberID="firstResponder"/>
