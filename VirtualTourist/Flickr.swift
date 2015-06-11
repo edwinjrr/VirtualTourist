@@ -17,7 +17,7 @@ class Flickr {
         session = NSURLSession.sharedSession()
     }
     
-    /* Function makes first request to get a random page, then it makes a request to get an image with the random page */
+    /* Function makes request to get the first page with 200 results, then it shuffles the the results and return the first 21 items */
     func getImageFromFlickrBySearch(methodArguments: [String : AnyObject], completionHandler: (results: [[String : AnyObject]]?, error: String?) -> Void) {
         
         let session = NSURLSession.sharedSession()
@@ -39,7 +39,17 @@ class Flickr {
 
                     if let photosArray = photosDictionary["photo"] as? [[String:AnyObject]] {
                         
-                        completionHandler(results: photosArray, error: nil)
+                        //Shuffle the array to avoid getting the same photos.
+                        var shuffledPhotosArray = photosArray.shuffled() as [[String:AnyObject]]
+                        
+                        var results = [[String:AnyObject]]()
+                        
+                        //Creating a array of just 21 objects.
+                        for item in shuffledPhotosArray[0...20] {
+                            results.append(item)
+                        }
+                        
+                        completionHandler(results: results, error: nil)
                         
                     } else {
                         completionHandler(results: nil, error: "Cant find key 'photo'")
@@ -111,5 +121,18 @@ class Flickr {
     
     struct Caches {
         static let imageCache = ImageCache()
+    }
+}
+
+extension Array {
+    
+    //Method to shuffle arrays (Found it in StackOverFlow).
+    func shuffled() -> [T] {
+        var list = self
+        for i in 0..<(list.count - 1) {
+            let j = Int(arc4random_uniform(UInt32(list.count - i))) + i
+            swap(&list[i], &list[j])
+        }
+        return list
     }
 }

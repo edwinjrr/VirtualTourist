@@ -30,6 +30,7 @@ class Photo: NSManagedObject {
         imageID = dictionary["id"] as! String
     }
     
+    //This property will get and save the images of the photos from/to the documents directory.
     var photoImage: UIImage? {
         
         get {

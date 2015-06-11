@@ -92,7 +92,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: - Save the zoom level helpers
     
     // Property for the file path.
-    
     var filePath : String {
         let manager = NSFileManager.defaultManager()
         let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
@@ -149,10 +148,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
         pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
         pinView!.animatesDrop = true
-        //pinView!.draggable = true
-        //pinView!.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
-        //pinView!.canShowCallout = true
-        //pinView!.selected = true
         
         return pinView
     }
@@ -166,36 +161,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
 
         self.navigationController!.pushViewController(controller, animated: true)
         
+        //This prevent that the pins get disabled after the first tap.
         mapView.deselectAnnotation(view.annotation, animated: false)
     }
-    
-    //Action for the annotation callout accesory.
-    //TODO: Use Pin object to change properties of it (title and subtitle)
-    //Update de pin coordinates when the drag ends.
-    
-    //Keeps all the pins selected so they can be always draggable
-//    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
-//        view.selected = true
-//    }
-    
-    //            geocoder.reverseGeocodeLocation(location, completionHandler: {(placemarks, error) -> Void in
-    //
-    //                if error != nil {
-    //                    println("Reverse geocoder failed with error" + error.localizedDescription)
-    //                    return
-    //                }
-    //                else {
-    //                    if placemarks.count > 0 {
-    //                        let placemark = placemarks[0] as! CLPlacemark
-    //
-    //                        var locality = placemark.locality
-    //                        var administrativeArea = placemark.administrativeArea
-    //                        var country = placemark.country
-    //                    }
-    //                    else {
-    //                        println("Problem with the data received from geocoder")
-    //                    }
-    //                }
-    //            })
 }
 

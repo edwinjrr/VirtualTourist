@@ -8,6 +8,8 @@
 
 import UIKit
 
+//Class reused from the FavoriteActors app.
+
 class ImageCache {
     
     private var inMemoryCache = NSCache()

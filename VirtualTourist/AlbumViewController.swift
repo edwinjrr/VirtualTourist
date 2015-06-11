@@ -76,7 +76,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
             "extras": "url_m",
             "format": "json",
             "nojsoncallback": "1",
-            "per_page": "21"
+            "per_page": "200"
         ]
         
         Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
@@ -152,10 +152,14 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         cell.imageView.image = nil
         
         //Set the photo image
-        
         if photo.photoImage != nil {
             photoImage = photo.photoImage
             cell.loadingIndicator.stopAnimating()
+            
+            //Every time a photo appears the numberOfPhotos's count will be incremented by one,
+            //then check if it's equal to the amount of photos in the collection, if equal the "New Collection" button will be enabled.
+            self.numberOfPhotos += 1
+            self.enableNewCollectionButton()
         }
         else {
             
@@ -173,11 +177,17 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
                     dispatch_async(dispatch_get_main_queue()) {
                         cell.imageView!.image = image
                         cell.loadingIndicator.stopAnimating()
+                        
+                        //Every time a photo appears the numberOfPhotos's count will be incremented by one,
+                        //then check if it's equal to the amount of photos in the collection, if equal the "New Collection" button will be enabled.
+                        self.numberOfPhotos += 1
+                        self.enableNewCollectionButton()
                     }
                 }
             }
             
-            // This is the custom property on this cell.
+            // This is the custom property on this cell. It uses a property observer,
+            // any time its value is set it canceles the previous NSURLSessionTask.
             cell.taskToCancelifCellIsReused = task
         }
         
@@ -189,11 +199,9 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         let photo = pin.photos[indexPath.item]
-        
         photo.pin = nil
         
         collectionView.deleteItemsAtIndexPaths([indexPath])
-        
         sharedContext.deleteObject(photo)
         
         self.saveContext()
@@ -211,53 +219,31 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         self.mapView.addAnnotation(pinAnnotation)
     }
     
-//    var currentIndexPaths = [NSIndexPath]()
-    
     @IBAction func deleteAllPhotos(sender: AnyObject) {
         
-//        let photo = pin.photos[indexPath.item]
-//
-//        photo.pin = nil
-//
-//        collectionView.deleteItemsAtIndexPaths([indexPath])
-//
-//        sharedContext.deleteObject(photo)
-//        self.saveContext()
+        //Empty the current array of photos.
+        for photo in pin.photos {
+            photo.pin = nil
+            sharedContext.deleteObject(photo)
+        }
         
-//        for photo in pin.photos {
-//            photo.pin = nil
-//            collectionView.deleteItemsAtIndexPaths([photo])
-//            sharedContext.deleteObject(photo)
-//        }
-//        
-//        self.saveContext()
+        collectionView.reloadData()
         
-//        var photosToDelete = [Photo]()
-//        
-//        //currentIndexPaths.append(indexPath)
-//        
-//        for indexPath in currentIndexPaths {
-//            photosToDelete.append(pin.photos[indexPath.item])
-//            collectionView.deleteItemsAtIndexPaths([indexPath])
-//        }
-//        
-//        for photo in photosToDelete {
-//            photo.pin = nil
-//            sharedContext.deleteObject(photo)
-//        }
-//        
-//        self.saveContext()
+        activityIndicator.startAnimating()
         
-//        for indexPath in currentIndexPaths {
-//            let photo = pin.photos[indexPath.item]
-//    
-//            photo.pin = nil
-//    
-//            collectionView.deleteItemsAtIndexPaths([indexPath])
-//    
-//            sharedContext.deleteObject(photo)
-//            self.saveContext()
-//        }
+        //Download a new set of photos.
+        downloadPhotos()
+        
+        self.saveContext()
+    }
+    
+    var numberOfPhotos: Int = 0
+    
+    ////Check if it's equal to the amount of photos in the collection, if equal the "New Collection" button will be enabled.
+    func enableNewCollectionButton() {
+        if numberOfPhotos == pin.photos.count {
+            newCollection.enabled = true
+        }
     }
 }
 
