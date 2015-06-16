@@ -18,7 +18,19 @@ class Flickr {
     }
     
     /* Function makes request to get the first page with 200 results, then it shuffles the the results and return the first 21 items */
-    func getImageFromFlickrBySearch(methodArguments: [String : AnyObject], completionHandler: (results: [[String : AnyObject]]?, error: String?) -> Void) {
+    func getImageFromFlickrBySearch(latitude: String, longitude: String, completionHandler: (results: [[String : AnyObject]]?, error: String?) -> Void) {
+        
+        let methodArguments = [
+            "method": "flickr.photos.search",
+            "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
+            "lat": latitude,
+            "lon": longitude,
+            "safe_search": "1",
+            "extras": "url_m",
+            "format": "json",
+            "nojsoncallback": "1",
+            "per_page": "21"
+        ]
         
         let session = NSURLSession.sharedSession()
         let urlString = "https://api.flickr.com/services/rest/" + escapedParameters(methodArguments)
@@ -39,17 +51,7 @@ class Flickr {
 
                     if let photosArray = photosDictionary["photo"] as? [[String:AnyObject]] {
                         
-                        //Shuffle the array to avoid getting the same photos.
-                        var shuffledPhotosArray = photosArray.shuffled() as [[String:AnyObject]]
-                        
-                        var results = [[String:AnyObject]]()
-                        
-                        //Creating a array of just 21 objects.
-                        for item in shuffledPhotosArray[0...20] {
-                            results.append(item)
-                        }
-                        
-                        completionHandler(results: results, error: nil)
+                        completionHandler(results: photosArray, error: nil)
                         
                     } else {
                         completionHandler(results: nil, error: "Cant find key 'photo'")
@@ -121,18 +123,5 @@ class Flickr {
     
     struct Caches {
         static let imageCache = ImageCache()
-    }
-}
-
-extension Array {
-    
-    //Method to shuffle arrays (Found it in StackOverFlow).
-    func shuffled() -> [T] {
-        var list = self
-        for i in 0..<(list.count - 1) {
-            let j = Int(arc4random_uniform(UInt32(list.count - i))) + i
-            swap(&list[i], &list[j])
-        }
-        return list
     }
 }

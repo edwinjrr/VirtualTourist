@@ -64,22 +64,12 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
     }
     
     // Download the photos from Flickr
-    
     func downloadPhotos() {
         
-        let methodArguments = [
-            "method": "flickr.photos.search",
-            "api_key": "c9c5e79fe507f54c1e3a475194a43da6",
-            "lat": String(stringInterpolationSegment: coordinates.latitude),
-            "lon": String(stringInterpolationSegment: coordinates.longitude),
-            "safe_search": "1",
-            "extras": "url_m",
-            "format": "json",
-            "nojsoncallback": "1",
-            "per_page": "200"
-        ]
+        let latitude: String = String(stringInterpolationSegment: coordinates.latitude)
+        let longitude: String = String(stringInterpolationSegment: coordinates.longitude)
         
-        Flickr.sharedInstance().getImageFromFlickrBySearch(methodArguments) {(results, error) in
+        Flickr.sharedInstance().getImageFromFlickrBySearch(latitude, longitude: longitude) {(results, error) in
             
             if let error = error {
                 println("Error with the Flickr method.") //<--- Setup an AlertView here!
@@ -201,10 +191,24 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         let photo = pin.photos[indexPath.item]
         photo.pin = nil
         
+        let imageIdentifier: String = "\(photo.imageID).jpg"
+        
         collectionView.deleteItemsAtIndexPaths([indexPath])
         sharedContext.deleteObject(photo)
         
+        removeFromDocumentsDirectory(imageIdentifier)
+        
         self.saveContext()
+    }
+    
+    //Remove images from the documents directory
+    func removeFromDocumentsDirectory(identifier: String) {
+        let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
+        let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
+        let path = fullURL.path!
+        
+        NSFileManager.defaultManager().removeItemAtPath(path, error: nil)
+        NSCache().removeObjectForKey(path)
     }
     
     // MARK: - Actions and Helpers
@@ -224,7 +228,9 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         //Empty the current array of photos.
         for photo in pin.photos {
             photo.pin = nil
+            let imageIdentifier: String = "\(photo.imageID).jpg"
             sharedContext.deleteObject(photo)
+            removeFromDocumentsDirectory(imageIdentifier)
         }
         
         collectionView.reloadData()
