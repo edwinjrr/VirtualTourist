@@ -12,7 +12,7 @@ import UIKit
 
 class ImageCache {
     
-    private var inMemoryCache = NSCache()
+    //private var inMemoryCache = NSCache()
     
     // MARK: - Retreiving images
     
@@ -27,9 +27,9 @@ class ImageCache {
         var data: NSData?
         
         // First try the memory cache
-        if let image = inMemoryCache.objectForKey(path) as? UIImage {
-            return image
-        }
+//        if let image = inMemoryCache.objectForKey(path) as? UIImage {
+//            return image
+//        }
         
         // Next Try the hard drive
         if let data = NSData(contentsOfFile: path) {
@@ -46,13 +46,13 @@ class ImageCache {
         
         // If the image is nil, remove images from the cache
         if image == nil {
-            inMemoryCache.removeObjectForKey(path)
+            //inMemoryCache.removeObjectForKey(path)
             NSFileManager.defaultManager().removeItemAtPath(path, error: nil)
             return
         }
         
         // Otherwise, keep the image in memory
-        inMemoryCache.setObject(image!, forKey: path)
+        //inMemoryCache.setObject(image!, forKey: path)
         
         // And in documents directory
         let data = UIImagePNGRepresentation(image!)

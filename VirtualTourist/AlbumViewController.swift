@@ -146,6 +146,8 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
             photoImage = photo.photoImage
             cell.loadingIndicator.stopAnimating()
             
+            //println("Sacada del disco")
+            
             //Every time a photo appears the numberOfPhotos's count will be incremented by one,
             //then check if it's equal to the amount of photos in the collection, if equal the "New Collection" button will be enabled.
             self.numberOfPhotos += 1
@@ -208,7 +210,7 @@ class AlbumViewController: UIViewController, MKMapViewDelegate, UICollectionView
         let path = fullURL.path!
         
         NSFileManager.defaultManager().removeItemAtPath(path, error: nil)
-        NSCache().removeObjectForKey(path)
+        //NSCache().removeObjectForKey(path)
     }
     
     // MARK: - Actions and Helpers
